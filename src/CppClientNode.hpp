@@ -142,6 +142,7 @@ class CppClientNode : public QObject {
         const auto* root =
             flatbuffers::GetRoot<fb::amrl_msgs::RobofleetStatus>(
                 data.data());
+
 	AMRLStatus amrls;
 	amrls.battery_level = root->battery_level();
 	amrls.is_ok = root->is_ok();
@@ -178,19 +179,25 @@ class CppClientNode : public QObject {
     std::cout << "received " << msg_type << " message on " << topic << std::endl;
    
     // try to publish
-    if (pub_fns.count(msg_type) == 0) {
-      // if you get this unexpectedly, ensure that:
-      // 1) you have registered the message type you intend to receive in your
-      // configuration, and 2) you are sending a valid, fully-qualified message
-      // type name (if you manually construct the flatbuffer)
-      //std::cerr << "ignoring message of unregistered type " << msg_type
-      //          << std::endl;
-      return;
-    }
+    if (pub_fns.count(msg_type) == 0) { return;}
+
+    // TODO Probably want to add this into the output struct
+    std::cout << "For robot " << get_robot_name_from_topic(topic) << std::endl;
     pub_fns[msg_type](data, topic);
   }
 
+ 
  public:
+   /*
+    * Returns the robot name from the fully qualified topic name that is used 
+    * to get the message from robofleet. 
+    * Assumes the first token block is the robot name.
+    */
+   std::string get_robot_name_from_topic(std::string topic){
+      std::string token = topic.erase(0, topic.find('/') + 1);
+      return token.erase(token.find('/'), token.length());  
+   }
+
   /**
    * @brief subscribe to remote messages that were specified in the config by
    * calling register_remote_msg_type. This function should run once a websocket
@@ -203,7 +210,7 @@ class CppClientNode : public QObject {
           "Registering for remote subscription to topic %s\n", topic.c_str());
       // Now, subscribe to the appropriate remote message
       AMRLSubscription sub_msg;
-      sub_msg.topic_regex = "/robot_name/status";
+      sub_msg.topic_regex = topic;
       sub_msg.action = 1;
       encode_ros_msg<AMRLSubscription>(
           sub_msg,

@@ -4,3 +4,6 @@
 [submodule "googletest"]
 	path = googletest
 	url = https://github.com/google/googletest
+[submodule "robofleet_server"]
+	path = robofleet_server
+	url = https://github.com/ut-amrl/robofleet_server.git
