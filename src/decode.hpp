@@ -1,5 +1,9 @@
 #pragma once
 
+#include <flatbuffers/flatbuffers.h>
+#include <schema_generated.h>
+#include "structs.hpp"
+/*
 #include <amrl_msgs/ColoredArc2D.h>
 #include <amrl_msgs/ColoredLine2D.h>
 #include <amrl_msgs/ColoredPoint2D.h>
@@ -10,20 +14,19 @@
 #include <amrl_msgs/RobofleetStatus.h>
 #include <amrl_msgs/RobofleetSubscription.h>
 #include <amrl_msgs/VisualizationMsg.h>
-#include <flatbuffers/flatbuffers.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <ros/time.h>
-#include <schema_generated.h>
 #include <sensor_msgs/CompressedImage.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/String.h>
-
+*/
 // to add a new message type, specialize this template to decode the message
 // and...
+
 template <typename Dst, typename Src>
 static Dst decode(const Src* const src);
 // specialize this struct to map ROS types to Flatbuffers types
@@ -33,6 +36,7 @@ struct flatbuffers_type_for {
 };
 
 // *** utility functions ***
+/*
 template <typename T, typename Vsrc, typename Vdst>
 static void decode_vector(const Vsrc* const src_vector_ptr, Vdst& dst_vector) {
   dst_vector.resize(src_vector_ptr->size());
@@ -45,7 +49,8 @@ static void decode_vector(const Vsrc* const src_vector_ptr, Vdst& dst_vector) {
     ++dst;
   }
 }
-
+*/
+/*
 // *** specializations below ***
 
 template <>
@@ -371,3 +376,36 @@ sensor_msgs::PointCloud2 decode(const fb::sensor_msgs::PointCloud2* const src) {
   dst.point_step = src->point_step();
   return dst;
 }
+*/
+
+/*
+template <>
+struct flatbuffers_type_for<AMRLStatus> {
+  typedef fb::AMRLStatus type;
+};
+
+template <> AMRLStatus decode( const AMRLStatus* const src) {
+  AMRLStatus dst;
+  dst.battery_level = src->battery_level;
+  dst.is_ok = src->is_ok;
+  dst.location = src->location;
+  dst.status = src->status;
+  return dst;
+}
+*/
+//fb::amrl_msgs::CreateRobofleetStatusDirect
+
+template <>
+struct flatbuffers_type_for<AMRLStatus> {
+  typedef fb::amrl_msgs::RobofleetStatus type;
+};
+/*
+AMRLStatus decode_status(const fb::amrl_msgs::RobofleetStatus* const src) {
+  AMRLStatus dst;
+  dst.battery_level = src->battery_level();
+  dst.is_ok = src->is_ok();
+  dst.location = src->location()->str();
+  dst.status = src->status()->str();
+  return dst;
+}
+*/

@@ -1,24 +1,28 @@
 #pragma once
+#include <flatbuffers/flatbuffers.h>
+#include <schema_generated.h>
 
+/*
 #include <amrl_msgs/Localization2DMsg.h>
 #include <amrl_msgs/RobofleetStatus.h>
 #include <amrl_msgs/RobofleetSubscription.h>
 #include <amrl_msgs/VisualizationMsg.h>
-#include <flatbuffers/flatbuffers.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
-#include <schema_generated.h>
 #include <sensor_msgs/CompressedImage.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Header.h>
 #include <std_msgs/String.h>
+*/
 
 #include <algorithm>
+#include "structs.hpp"
 
 using FBB = flatbuffers::FlatBufferBuilder;
 using MetadataOffset = flatbuffers::Offset<fb::MsgMetadata>;
+
 
 /**
  * @brief Encode a ROS message of type T into a flatbuffer object, placing it
@@ -70,6 +74,18 @@ static flatbuffers::uoffset_t encode_vector(
 
 // *** specializations below ***
 
+// amrl_msgs/RobofleetSubscription
+template <>
+flatbuffers::uoffset_t encode(
+    FBB& fbb, const AMRLSubscription& msg,
+    const MetadataOffset& metadata) {
+  return fb::amrl_msgs::CreateRobofleetSubscriptionDirect(
+             fbb, metadata, msg.topic_regex.c_str(), msg.action)
+      .o;
+}
+
+
+/*
 // std_msgs/Header
 template <>
 flatbuffers::uoffset_t encode(
@@ -420,3 +436,4 @@ flatbuffers::uoffset_t encode(
              msg.is_dense)
       .o;
 }
+*/
